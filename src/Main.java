@@ -29,9 +29,9 @@ public class Main {
 
             switch (op){
                 case 1: escribirRegistro(); break;
-                //case 2: leerRegistro(); break;
-                //case 3: marcarBorrado(); break;
-                //case 4: listar(); break;
+                case 2: leerRegistro(); break;
+                case 3: marcarBorrado(); break;
+                case 4: listar(); break;
                 //case 5: compactar(); break;
                 case 0: System.out.println("Saliendo..."); System.exit(0);
                 default: System.out.println("Opción invalida, eliga una entre el 1 al 5."); break;
@@ -62,7 +62,50 @@ public class Main {
             PersonasPadel pdl = new PersonasPadel('A', idPareja, nombrePareja, partidoWon, partidoLost);
             pdl.escribir(raf);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
+        }
+    }
+
+    public static void leerRegistro() throws IOException{
+
+        System.out.print("Posicion: ");
+        int pos = sc.nextInt();
+
+        try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
+            raf.seek((long) pos * PersonasPadel.tanByte);
+            PersonasPadel pdl = PersonasPadel.leer(raf);
+            System.out.println(pdl);
+
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
+    }
+
+    public static void marcarBorrado() throws IOException {
+
+        System.out.print("Posicion: ");
+        int pos = sc.nextInt();
+
+        try (RandomAccessFile raf = new RandomAccessFile(archivo, "rw")) {
+            raf.seek((long) pos * PersonasPadel.tanByte);
+            raf.writeChar('B');
+        } catch (IOException e) {
+            throw new IOException(e);
+        }
+    }
+
+    public static void listar() throws IOException{
+        try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
+            long totalRegistros = raf.length() / PersonasPadel.tanByte;
+            for (int i = 0; i < totalRegistros; i++) {
+                raf.seek((long) i * PersonasPadel.tanByte);
+                PersonasPadel pdl = PersonasPadel.leer(raf);
+                if (pdl.getEstado() == 'A') {
+                    System.out.println(pdl);
+                }
+            }
+        } catch (IOException e) {
+            throw new IOException(e);
         }
     }
 }
